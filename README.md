@@ -63,9 +63,9 @@ para compartilhar a lista pelo WhatsApp.
 | **Unidades** | `un`, `pct`, `kg`, `g`, `L` e `ml`. |
 | **Quantidade fracionada** | Aceita até 3 casas decimais, com vírgula ou ponto (`1,5 kg`). |
 | **Máscara de moeda** | O valor é digitado a partir dos centavos e formatado em `R$` automaticamente. |
-| **Marcar no carrinho** | Um checkbox marca o item como pego. |
+| **Marcar no carrinho** | No modo Planejamento, um checkbox marca o item como pego e o deixa riscado. No modo Em compra, tudo já está no carrinho, então o checkbox dá lugar a uma lixeira. |
 | **Editar item** | Toque no item para alterar qualquer campo. |
-| **Remover com desfazer** | Arraste o item para o lado para removê-lo. O botão **Desfazer** devolve o item à mesma posição. |
+| **Remover com desfazer** | Arraste o item para o lado (ou toque na lixeira, no modo Em compra) para removê-lo. O botão **Desfazer** devolve o item à mesma posição. |
 
 ### 🔎 Autocompletar com histórico
 

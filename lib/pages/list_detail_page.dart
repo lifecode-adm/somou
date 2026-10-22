@@ -175,8 +175,10 @@ class ListDetailPage extends StatelessWidget {
                         onDismissed: (_) => _removeItem(context, item),
                         child: ItemTile(
                           item: item,
+                          mode: list.mode,
                           onTap: () => _editItem(context, item),
                           onPickedChanged: () => controller.togglePicked(item),
+                          onRemove: () => _removeItem(context, item),
                         ),
                       );
                     },

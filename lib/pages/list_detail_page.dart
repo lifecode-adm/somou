@@ -25,7 +25,9 @@ class ListDetailPage extends StatelessWidget {
         itemRepo: context.read<ListItemRepository>(),
         history: context.read<ProductHistoryRepository>(),
       )..load(),
-      child: const ListDetailPage(),
+      // Avisos desta tela (como o "Desfazer") somem junto com ela, em vez de
+      // continuarem na Home.
+      child: const ScaffoldMessenger(child: ListDetailPage()),
     ),
   );
 
@@ -55,6 +57,8 @@ class ListDetailPage extends StatelessWidget {
     messenger.showSnackBar(
       SnackBar(
         content: Text('"${item.name}" removido.'),
+        // Com ação, o padrão do Flutter é ficar na tela até alguém tocar.
+        persist: false,
         action: SnackBarAction(
           label: 'Desfazer',
           onPressed: () => controller.restoreItem(item),

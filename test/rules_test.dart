@@ -74,6 +74,10 @@ void main() {
       expect(list.store, isNull);
     });
 
+    test('lista nova começa em Em compra', () {
+      expect(const ListInput().toNewList(_now).mode, ListMode.shopping);
+    });
+
     test('RN02: padrões do item', () {
       const input = ItemInput();
       final item = input.toNewItem(

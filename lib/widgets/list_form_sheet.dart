@@ -36,7 +36,7 @@ class _ListFormSheetState extends State<ListFormSheet> {
       _ => '',
     },
   );
-  late ListMode _mode = widget.initial?.mode ?? ListMode.planning;
+  late ListMode _mode = widget.initial?.mode ?? ListMode.shopping;
 
   bool get _isEditing => widget.initial != null;
 
@@ -104,16 +104,16 @@ class _ListFormSheetState extends State<ListFormSheet> {
             spacing: 12,
             children: [
               _ModeOption(
-                title: 'Vou planejar',
-                description: 'Monto antes e marco "já peguei" no mercado',
-                selected: _mode == ListMode.planning,
-                onTap: () => setState(() => _mode = ListMode.planning),
-              ),
-              _ModeOption(
                 title: 'Já estou comprando',
                 description: 'Cada item entra como pego',
                 selected: _mode == ListMode.shopping,
                 onTap: () => setState(() => _mode = ListMode.shopping),
+              ),
+              _ModeOption(
+                title: 'Vou planejar',
+                description: 'Monto antes e marco "já peguei" no mercado',
+                selected: _mode == ListMode.planning,
+                onTap: () => setState(() => _mode = ListMode.planning),
               ),
             ],
           ),

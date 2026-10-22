@@ -9,7 +9,7 @@ class ListInput {
     this.name,
     this.store,
     this.budgetCents,
-    this.mode = ListMode.planning,
+    this.mode = ListMode.shopping,
   });
 
   final String? name;

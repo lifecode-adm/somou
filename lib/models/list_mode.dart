@@ -1,7 +1,7 @@
-/// Como a lista é usada: montada antes da compra ou durante ela.
+/// Como a lista é usada: montada durante a compra (padrão) ou antes dela.
 enum ListMode {
-  planning('planning', 'Planejamento'),
-  shopping('shopping', 'Em compra');
+  shopping('shopping', 'Em compra'),
+  planning('planning', 'Planejamento');
 
   const ListMode(this.dbValue, this.label);
 

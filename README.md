@@ -48,7 +48,7 @@ para compartilhar a lista pelo WhatsApp.
 | Funcionalidade | Descrição |
 |---|---|
 | **Criar lista** | Nome, supermercado e orçamento são opcionais. Sem nome, a lista recebe a data (`Lista 22/10/2026`). |
-| **Dois modos de uso** | **Vou planejar**: você monta a lista antes de sair de casa. **Já estou comprando**: você monta a lista durante a compra, e cada item adicionado já entra marcado como no carrinho. |
+| **Dois modos de uso** | **Já estou comprando** (padrão): você monta a lista durante a compra, e cada item adicionado já entra marcado como no carrinho. **Vou planejar**: você monta a lista antes de sair de casa. |
 | **Editar lista** | Altera nome, supermercado e orçamento. O modo é definido na criação e não muda depois. |
 | **Duplicar lista** | Cria uma `Cópia de ...` com todos os itens desmarcados, em modo Planejamento. É útil para a compra do mês. |
 | **Excluir lista** | Pede confirmação e remove a lista junto com todos os itens. |

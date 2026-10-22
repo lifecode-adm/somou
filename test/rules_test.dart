@@ -1,4 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:somou/l10n/l10n.dart';
 import 'package:somou/models/form_inputs.dart';
 import 'package:somou/models/list_item.dart';
 import 'package:somou/models/list_mode.dart';
@@ -9,6 +12,8 @@ import 'package:somou/utils/formatters.dart';
 import 'package:somou/utils/share_text.dart';
 
 final _now = DateTime(2026, 10, 21, 9, 41);
+final _pt = lookupAppLocalizations(const Locale('pt'));
+final _en = lookupAppLocalizations(const Locale('en'));
 
 ListItem _item(
   String name,
@@ -41,6 +46,8 @@ ShoppingList _list({ListMode mode = ListMode.planning, int? budget}) =>
     );
 
 void main() {
+  setUpAll(initializeDateFormatting);
+
   group('formatação', () {
     test('moeda em pt_BR', () {
       expect(formatMoney(16396), r'R$ 163,96');
@@ -149,7 +156,7 @@ void main() {
         const BudgetStatus(
           referenceCents: 16396,
           budgetCents: 20000,
-        ).percentLabel,
+        ).percentLabel(_pt),
         '82% do orçamento',
       );
     });
@@ -159,7 +166,7 @@ void main() {
     final text = buildShareText(_list(), [
       _item('Arroz', 2, Unit.un, 2500, picked: true, brand: 'Tio João'),
       _item('Carne', 1.5, Unit.kg, 3990),
-    ]);
+    ], _pt);
     expect(
       text,
       '🛒 Compra do mês — Atacadão\n'
@@ -172,5 +179,58 @@ void main() {
       'Itens: 2 · Produtos: 3\n'
       r'Total: R$ 109,85',
     );
+  });
+
+  group('idioma e região', () {
+    // Volta ao padrão do app para não afetar os outros testes.
+    tearDown(() => configureFormatters(const Locale('pt', 'BR')));
+
+    test('português para qualquer pt; inglês para o resto', () {
+      expect(resolveAppLocale(const Locale('pt', 'BR')), const Locale('pt'));
+      expect(resolveAppLocale(const Locale('pt', 'PT')), const Locale('pt'));
+      expect(resolveAppLocale(const Locale('en', 'US')), const Locale('en'));
+      expect(resolveAppLocale(const Locale('es', 'ES')), const Locale('en'));
+      expect(resolveAppLocale(null), const Locale('en'));
+    });
+
+    test('moeda vem da região, formato vem do idioma', () {
+      configureFormatters(const Locale('en', 'US'));
+      expect(formatMoney(123456), r'$1,234.56');
+      expect(formatQuantity(1.5), '1.5');
+      expect(formatQuantityInput(1234.5), '1234.5');
+      expect(formatDate(_now), '10/21/2026');
+
+      configureFormatters(const Locale('en', 'BR'));
+      expect(formatMoney(479), r'R$4.79');
+
+      configureFormatters(const Locale('de', 'DE'));
+      expect(formatMoney(479), '4,79 €');
+
+      configureFormatters(const Locale('pt', 'BR'));
+      expect(formatMoney(123456), r'R$ 1.234,56');
+      expect(formatDate(_now), '21/10/2026');
+    });
+
+    test('textos e unidades em inglês', () {
+      expect(Unit.un.label(_en), 'pc');
+      expect(Unit.kg.label(_en), 'kg');
+      expect(ListMode.shopping.label(_en), 'Shopping');
+      expect(_en.itemCount(1), '1 item');
+      expect(_en.itemCount(3), '3 items');
+      expect(
+        const BudgetStatus(referenceCents: 1, budgetCents: 0).percentLabel(_en),
+        'Over budget',
+      );
+    });
+
+    test('lista e item sem nome usam o nome traduzido', () {
+      final list = ListInput(
+        defaultName: (date) => _en.defaultListName(formatDate(date)),
+      ).toNewList(_now);
+      expect(list.name, 'List 21/10/2026');
+      final input = ItemInput(defaultName: _en.unnamedItem);
+      expect(input.effectiveName, 'Unnamed item');
+      expect(input.hasName, isFalse);
+    });
   });
 }

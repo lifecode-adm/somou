@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../models/list_item.dart';
 import '../models/list_mode.dart';
 import '../theme/app_theme.dart';
@@ -28,11 +29,12 @@ class ItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     final planning = mode == ListMode.planning;
     final done = planning && item.picked;
     final detail = [
       ?item.brand,
-      '${formatQuantity(item.quantity)} ${item.unit.symbol} × '
+      '${formatQuantity(item.quantity)} ${item.unit.label(l10n)} × '
           '${formatMoney(item.unitPriceCents)}',
     ].join(' · ');
 
@@ -49,13 +51,13 @@ class ItemTile extends StatelessWidget {
               Checkbox(
                 value: done,
                 onChanged: (_) => onPickedChanged(),
-                semanticLabel: 'Já peguei',
+                semanticLabel: l10n.picked,
               )
             else
               IconButton(
                 onPressed: onRemove,
                 icon: Icon(Icons.delete_outline, color: colors.textMuted),
-                tooltip: 'Remover',
+                tooltip: l10n.remove,
               ),
             Expanded(
               child: Column(

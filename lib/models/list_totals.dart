@@ -83,7 +83,6 @@ class BudgetStatus {
 
   int get overCents => isOver ? referenceCents - budgetCents : 0;
 
-  String get percentLabel => ratio.isFinite
-      ? '${(ratio * 100).round()}% do orçamento'
-      : 'Acima do orçamento';
+  /// Percentual usado; nulo quando o orçamento é zero e já foi passado.
+  int? get percent => ratio.isFinite ? (ratio * 100).round() : null;
 }

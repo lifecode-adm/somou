@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../models/list_mode.dart';
 import '../models/list_totals.dart';
 import '../models/shopping_list.dart';
@@ -23,6 +24,7 @@ class ListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final list = summary.list;
     final muted = TextStyle(fontSize: 13, color: colors.textMuted);
@@ -32,9 +34,9 @@ class ListCard extends StatelessWidget {
       cartCents: summary.cartCents,
     );
     final counts = [
-      plural(summary.itemCount, 'item', 'itens'),
+      l10n.itemCount(summary.itemCount),
       if (list.mode == ListMode.planning && summary.itemCount > 0)
-        '${summary.pickedCount} no carrinho',
+        l10n.pickedCount(summary.pickedCount),
     ].join(' · ');
 
     return Material(
@@ -70,7 +72,7 @@ class ListCard extends StatelessWidget {
                 ],
               ),
               Text(
-                '${list.store ?? 'Sem supermercado'} · '
+                '${list.store ?? l10n.noStore} · '
                 '${formatDate(list.createdAt)}',
                 style: muted,
               ),
@@ -91,8 +93,10 @@ class ListCard extends StatelessWidget {
               if (budget != null) ...[
                 BudgetBar(status: budget),
                 Text(
-                  '${budget.percentLabel} de '
-                  '${formatMoney(budget.budgetCents)}',
+                  l10n.budgetOf(
+                    budget.percentLabel(l10n),
+                    formatMoney(budget.budgetCents),
+                  ),
                   style: muted.copyWith(fontSize: 12),
                 ),
               ],
@@ -114,12 +118,12 @@ class ModeChip extends StatelessWidget {
     final colors = context.colors;
     return switch (mode) {
       ListMode.planning => Pill(
-        label: mode.label,
+        label: mode.label(context.l10n),
         background: colors.primaryContainer,
         foreground: Theme.of(context).colorScheme.primary,
       ),
       ListMode.shopping => Pill(
-        label: mode.label,
+        label: mode.label(context.l10n),
         background: colors.shoppingChip,
         foreground: colors.onShoppingChip,
       ),

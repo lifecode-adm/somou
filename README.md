@@ -111,7 +111,8 @@ Total: R$ 18,55
 ### 🎨 Interface
 
 - Material Design 3, com **tema claro e escuro** que segue o sistema.
-- Interface em **português do Brasil**, com moeda, datas e números em `pt-BR`.
+- Interface em **português** quando o celular está em português e em **inglês** nos demais idiomas.
+- Moeda da **região** do celular (R$, US$, €…), e datas e números no formato do idioma.
 - Telas vazias com orientação para o primeiro uso.
 
 ---
@@ -146,7 +147,7 @@ e `RNxx` para regras de negócio) e cobertas por testes.
 | [Flutter](https://flutter.dev) / Dart 3 | Framework e linguagem |
 | [provider](https://pub.dev/packages/provider) | Injeção de dependências e gerenciamento de estado (`ChangeNotifier`) |
 | [sqflite](https://pub.dev/packages/sqflite) | Banco SQLite local |
-| [intl](https://pub.dev/packages/intl) + `flutter_localizations` | Formatação de moeda, data e números em pt-BR |
+| [intl](https://pub.dev/packages/intl) + `flutter_localizations` | Traduções (`lib/l10n/*.arb`) e formatação de moeda, data e números |
 | [url_launcher](https://pub.dev/packages/url_launcher) | Abertura do WhatsApp |
 | [sqflite_common_ffi](https://pub.dev/packages/sqflite_common_ffi) | SQLite em memória nos testes |
 | [flutter_lints](https://pub.dev/packages/flutter_lints) | Análise estática |

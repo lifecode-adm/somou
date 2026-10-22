@@ -1,12 +1,11 @@
 /// Como a lista é usada: montada durante a compra (padrão) ou antes dela.
 enum ListMode {
-  shopping('shopping', 'Em compra'),
-  planning('planning', 'Planejamento');
+  shopping('shopping'),
+  planning('planning');
 
-  const ListMode(this.dbValue, this.label);
+  const ListMode(this.dbValue);
 
   final String dbValue;
-  final String label;
 
   static ListMode fromDb(String value) =>
       values.firstWhere((mode) => mode.dbValue == value);

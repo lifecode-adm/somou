@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../models/form_inputs.dart';
 import '../models/list_item.dart';
 import '../models/product_history.dart';
@@ -37,7 +38,7 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
   late final _brand = TextEditingController(text: widget.initial?.brand);
   late final _quantity = TextEditingController(
     text: switch (widget.initial) {
-      final item? => formatQuantity(item.quantity).replaceAll('.', ''),
+      final item? => formatQuantityInput(item.quantity),
       null => '',
     },
   );
@@ -81,6 +82,7 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
     quantity: parseQuantity(_quantity.text),
     unit: _unit,
     unitPriceCents: parseMoney(_price.text),
+    defaultName: context.l10n.unnamedItem,
   );
 
   /// Ignora respostas que chegam depois de uma busca mais nova.
@@ -100,7 +102,7 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
     setState(() {
       _name.text = product.name;
       _brand.text = product.brand ?? '';
-      _quantity.text = formatQuantity(product.quantity).replaceAll('.', '');
+      _quantity.text = formatQuantityInput(product.quantity);
       _unit = product.unit;
       _price.text = product.unitPriceCents > 0
           ? formatMoney(product.unitPriceCents)
@@ -118,9 +120,10 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     final input = _input;
     return SheetScaffold(
-      title: _isEditing ? 'Editar item' : 'Adicionar item',
+      title: _isEditing ? l10n.editItem : l10n.addItem,
       children: [
         TextField(
           controller: _name,
@@ -129,9 +132,9 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
           textCapitalization: TextCapitalization.sentences,
           textInputAction: TextInputAction.next,
           onChanged: _onNameChanged,
-          decoration: const InputDecoration(
-            labelText: 'Produto',
-            hintText: 'Ex.: Leite integral',
+          decoration: InputDecoration(
+            labelText: l10n.product,
+            hintText: l10n.productHint,
           ),
         ),
         if (_suggestions.isNotEmpty)
@@ -150,7 +153,7 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
                 color: Theme.of(context).colorScheme.primary,
               ),
               Text(
-                'Preenchido com a última compra',
+                l10n.filledFromHistory,
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).colorScheme.primary,
@@ -162,9 +165,9 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
           controller: _brand,
           textCapitalization: TextCapitalization.words,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(
-            labelText: 'Marca (opcional)',
-            hintText: 'Ex.: Piracanjuba',
+          decoration: InputDecoration(
+            labelText: l10n.brandOptional,
+            hintText: l10n.brandHint,
           ),
         ),
         Row(
@@ -181,8 +184,8 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
                 inputFormatters: [QuantityInputFormatter()],
                 textInputAction: TextInputAction.next,
                 onChanged: (_) => setState(() {}),
-                decoration: const InputDecoration(
-                  labelText: 'Quantidade',
+                decoration: InputDecoration(
+                  labelText: l10n.quantity,
                   hintText: '1',
                 ),
               ),
@@ -190,10 +193,13 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
             Expanded(
               child: DropdownButtonFormField<Unit>(
                 initialValue: _unit,
-                decoration: const InputDecoration(labelText: 'Unidade'),
+                decoration: InputDecoration(labelText: l10n.unit),
                 items: [
                   for (final unit in Unit.values)
-                    DropdownMenuItem(value: unit, child: Text(unit.symbol)),
+                    DropdownMenuItem(
+                      value: unit,
+                      child: Text(unit.label(l10n)),
+                    ),
                 ],
                 onChanged: (unit) => setState(() => _unit = unit ?? _unit),
               ),
@@ -205,9 +211,9 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
           keyboardType: TextInputType.number,
           inputFormatters: [MoneyInputFormatter()],
           onChanged: (_) => setState(() {}),
-          decoration: const InputDecoration(
-            labelText: 'Valor unitário',
-            hintText: r'R$ 0,00',
+          decoration: InputDecoration(
+            labelText: l10n.unitPrice,
+            hintText: formatMoney(0),
           ),
         ),
         // RF08: subtotal ao vivo, antes de confirmar.
@@ -224,7 +230,7 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Subtotal',
+                      l10n.subtotal,
                       style: TextStyle(
                         fontSize: 13,
                         color: Theme.of(context).colorScheme.primary,
@@ -251,7 +257,7 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(input),
-          child: Text(_isEditing ? 'Salvar' : 'Adicionar'),
+          child: Text(_isEditing ? l10n.save : l10n.add),
         ),
       ],
     );
@@ -272,6 +278,7 @@ class _Suggestions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: colors.border),
@@ -309,7 +316,7 @@ class _Suggestions extends StatelessWidget {
                             [
                               ?product.brand,
                               '${formatQuantity(product.quantity)} '
-                                  '${product.unit.symbol}',
+                                  '${product.unit.label(l10n)}',
                               formatMoney(product.unitPriceCents),
                             ].join(' · '),
                             style: TextStyle(

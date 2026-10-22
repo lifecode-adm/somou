@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../models/list_totals.dart';
 import '../theme/app_theme.dart';
 
@@ -22,7 +23,7 @@ class BudgetBar extends StatelessWidget {
         backgroundColor: over
             ? colors.dangerContainer
             : colors.primaryContainer,
-        semanticsLabel: status.percentLabel,
+        semanticsLabel: status.percentLabel(context.l10n),
       ),
     );
   }
@@ -49,7 +50,7 @@ class BudgetChip extends StatelessWidget {
       BudgetLevel.over => (colors.dangerContainer, colors.danger),
     };
     return Pill(
-      label: status.percentLabel,
+      label: status.percentLabel(context.l10n),
       background: background,
       foreground: foreground,
     );

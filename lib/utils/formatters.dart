@@ -1,13 +1,61 @@
+import 'dart:ui';
+
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/number_symbols_data.dart';
 
-final _currency = NumberFormat.currency(
+// Começam em pt-BR; configureFormatters troca pelo locale do aparelho.
+var _currency = NumberFormat.currency(
   locale: 'pt_BR',
   symbol: r'R$',
   decimalDigits: 2,
 );
-final _quantity = NumberFormat('#,##0.###', 'pt_BR');
-final _date = DateFormat('dd/MM/yyyy');
+var _quantity = NumberFormat('#,##0.###', 'pt_BR');
+var _quantityInput = NumberFormat('0.###', 'pt_BR');
+var _date = DateFormat('dd/MM/yyyy');
+
+/// Formata moeda, números e datas pelo locale do aparelho: a moeda vem da
+/// região (R$, US$, €…) e o formato dos números e datas vem do idioma.
+///
+/// Exige `initializeDateFormatting()` antes, para ter as datas de todos os
+/// idiomas.
+void configureFormatters(Locale device) {
+  final locale = Intl.verifiedLocale(
+    device.toLanguageTag().replaceAll('-', '_'),
+    NumberFormat.localeExists,
+    onFailure: (_) => 'en',
+  )!;
+  final currencyCode = _currencyForRegion(device.countryCode);
+  // Mesmo em moedas sem centavos, o app guarda e digita em centavos.
+  _currency = NumberFormat.currency(
+    locale: locale,
+    name: currencyCode,
+    symbol: NumberFormat.simpleCurrency(
+      locale: locale,
+      name: currencyCode,
+    ).currencySymbol,
+    decimalDigits: 2,
+  );
+  _quantity = NumberFormat('#,##0.###', locale);
+  _quantityInput = NumberFormat('0.###', locale);
+  _date = DateFormat.yMd(
+    Intl.verifiedLocale(
+      locale,
+      DateFormat.localeExists,
+      onFailure: (_) => 'en',
+    ),
+  );
+}
+
+/// Moeda padrão da região, procurada em qualquer locale do intl que use
+/// essa região (ex.: en_BR não existe, mas pt_BR diz que BR usa BRL).
+String? _currencyForRegion(String? region) {
+  if (region == null || region.isEmpty) return null;
+  for (final MapEntry(:key, :value) in numberFormatSymbols.entries) {
+    if (key.endsWith('_$region')) return value.DEF_CURRENCY_CODE;
+  }
+  return null;
+}
 
 /// 16396 → "R$ 163,96".
 String formatMoney(int cents) =>
@@ -15,6 +63,9 @@ String formatMoney(int cents) =>
 
 /// 1.5 → "1,5"; 2.0 → "2".
 String formatQuantity(double quantity) => _quantity.format(quantity);
+
+/// Quantidade para o campo de edição: sem separador de milhar.
+String formatQuantityInput(double quantity) => _quantityInput.format(quantity);
 
 String formatDate(DateTime date) => _date.format(date);
 
@@ -31,9 +82,6 @@ int? parseMoney(String text) {
   if (digits.isEmpty) return null;
   return int.parse(digits);
 }
-
-String plural(int count, String singular, String pluralForm) =>
-    '$count ${count == 1 ? singular : pluralForm}';
 
 const _accents = {
   'á': 'a', 'à': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a', //

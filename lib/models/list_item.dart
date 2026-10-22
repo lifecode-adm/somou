@@ -1,6 +1,6 @@
 import 'unit.dart';
 
-/// RN02: nome dado a um item sem nome; não entra no histórico.
+/// RN02: nome dado a um item sem nome quando não há tradução à mão.
 const kDefaultItemName = 'Item sem nome';
 
 class ListItem {

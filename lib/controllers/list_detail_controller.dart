@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../data/list_item_repository.dart';
 import '../data/product_history_repository.dart';
 import '../data/shopping_list_repository.dart';
+import '../l10n/app_localizations.dart';
 import '../models/form_inputs.dart';
 import '../models/list_item.dart';
 import '../models/list_totals.dart';
@@ -59,14 +60,14 @@ class ListDetailController extends ChangeNotifier {
       mode: _list!.mode,
       now: DateTime.now(),
     );
-    final id = await _itemRepo.insert(item);
+    final id = await _itemRepo.insert(item, remember: input.hasName);
     _setItems([..._items, item.copyWith(id: id)]);
     notifyListeners();
   }
 
   Future<void> updateItem(ListItem item, ItemInput input) async {
     final updated = input.applyTo(item, DateTime.now());
-    await _itemRepo.update(updated);
+    await _itemRepo.update(updated, remember: input.hasName);
     _replace(updated);
   }
 
@@ -100,14 +101,16 @@ class ListDetailController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<int> duplicate() => _lists.duplicate(_list!, DateTime.now());
+  Future<int> duplicate({required String name}) =>
+      _lists.duplicate(_list!, DateTime.now(), name: name);
 
   Future<void> delete() => _lists.delete(listId);
 
   Future<List<ProductHistory>> searchProducts(String query) =>
       _history.search(query);
 
-  String shareText() => buildShareText(_list!, _items);
+  String shareText(AppLocalizations l10n) =>
+      buildShareText(_list!, _items, l10n);
 
   void _replace(ListItem updated) {
     _setItems([

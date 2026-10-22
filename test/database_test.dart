@@ -36,6 +36,7 @@ void main() {
           mode: mode ?? ListMode.planning,
           now: now,
         ),
+        remember: input.hasName,
       );
 
   test('Home soma totais e contagens sem carregar itens', () async {
@@ -87,7 +88,11 @@ void main() {
     );
     final source = (await lists.fetchById(id))!;
 
-    final copyId = await lists.duplicate(source, now);
+    final copyId = await lists.duplicate(
+      source,
+      now,
+      name: 'Cópia de Churrasco',
+    );
     final copy = (await lists.fetchById(copyId))!;
     final copied = await items.fetchByList(copyId);
     expect(copy.name, 'Cópia de Churrasco');

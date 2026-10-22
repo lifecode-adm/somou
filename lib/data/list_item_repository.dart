@@ -20,20 +20,23 @@ class ListItemRepository {
     return rows.map(ListItem.fromMap).toList();
   }
 
-  /// Inclui o item e atualiza o histórico do produto.
-  Future<int> insert(ListItem item) => _db.transaction((txn) async {
-    final id = await txn.insert('list_items', item.toMap());
-    await _history.save(item, executor: txn);
-    await _touchList(txn, item);
-    return id;
-  });
+  /// Inclui o item e atualiza o histórico do produto, se ele tiver nome
+  /// ([remember]); item sem nome não entra no histórico (RN02).
+  Future<int> insert(ListItem item, {bool remember = true}) =>
+      _db.transaction((txn) async {
+        final id = await txn.insert('list_items', item.toMap());
+        if (remember) await _history.save(item, executor: txn);
+        await _touchList(txn, item);
+        return id;
+      });
 
-  /// Salva a edição e atualiza o histórico do produto.
-  Future<void> update(ListItem item) => _db.transaction((txn) async {
-    await _updateRow(txn, item);
-    await _history.save(item, executor: txn);
-    await _touchList(txn, item);
-  });
+  /// Salva a edição e atualiza o histórico do produto, como em [insert].
+  Future<void> update(ListItem item, {bool remember = true}) =>
+      _db.transaction((txn) async {
+        await _updateRow(txn, item);
+        if (remember) await _history.save(item, executor: txn);
+        await _touchList(txn, item);
+      });
 
   /// Marcar "já peguei" não mexe no histórico.
   Future<void> setPicked(ListItem item) => _db.transaction((txn) async {

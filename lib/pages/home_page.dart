@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../controllers/home_controller.dart';
+import '../l10n/l10n.dart';
 import '../models/shopping_list.dart';
 import '../theme/app_theme.dart';
 import '../widgets/dialogs.dart';
@@ -15,9 +16,8 @@ class HomePage extends StatelessWidget {
 
   Future<void> _openList(BuildContext context, int listId) async {
     final controller = context.read<HomeController>();
-    final copyId = await Navigator.of(context).push(
-      ListDetailPage.route(listId),
-    );
+    final copyId = await Navigator.of(context)
+        .push(ListDetailPage.route(listId));
     // O detalhe pode ter mudado itens, totais ou excluído a lista.
     await controller.load();
     // Duplicada no detalhe: abre a cópia.
@@ -34,6 +34,7 @@ class HomePage extends StatelessWidget {
 
   Future<void> _showActions(BuildContext context, ShoppingList list) async {
     final controller = context.read<HomeController>();
+    final l10n = context.l10n;
     final action = await showModalBottomSheet<_ListAction>(
       context: context,
       builder: (context) => SafeArea(
@@ -42,18 +43,18 @@ class HomePage extends StatelessWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.edit_outlined),
-              title: const Text('Editar'),
+              title: Text(l10n.edit),
               onTap: () => Navigator.of(context).pop(_ListAction.edit),
             ),
             ListTile(
               leading: const Icon(Icons.copy_outlined),
-              title: const Text('Duplicar'),
+              title: Text(l10n.duplicate),
               onTap: () => Navigator.of(context).pop(_ListAction.duplicate),
             ),
             ListTile(
               leading: Icon(Icons.delete_outline, color: context.colors.danger),
               title: Text(
-                'Excluir',
+                l10n.delete,
                 style: TextStyle(color: context.colors.danger),
               ),
               onTap: () => Navigator.of(context).pop(_ListAction.delete),
@@ -69,8 +70,8 @@ class HomePage extends StatelessWidget {
         final input = await showListFormSheet(context, initial: list);
         if (input != null) await controller.updateList(list, input);
       case _ListAction.duplicate:
-        await controller.duplicateList(list);
-        if (context.mounted) showMessage(context, 'Lista duplicada.');
+        await controller.duplicateList(list, name: l10n.copyOf(list.name));
+        if (context.mounted) showMessage(context, l10n.listDuplicated);
       case _ListAction.delete:
         if (await confirmDeleteList(context, list)) {
           await controller.deleteList(list);
@@ -82,6 +83,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = context.watch<HomeController>();
     final colors = context.colors;
+    final l10n = context.l10n;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
@@ -119,7 +121,7 @@ class HomePage extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        'Lista de compras com total na hora',
+                        l10n.appTagline,
                         style: TextStyle(
                           fontSize: 13,
                           color: colors.onHeaderMuted,
@@ -143,7 +145,7 @@ class HomePage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return Text(
-                        'Suas listas',
+                        l10n.yourLists,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -167,7 +169,7 @@ class HomePage extends StatelessWidget {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => _createList(context),
           icon: const Icon(Icons.add),
-          label: const Text('Nova lista'),
+          label: Text(l10n.newList),
         ),
       ),
     );
@@ -182,6 +184,7 @@ class _EmptyHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -194,12 +197,12 @@ class _EmptyHome extends StatelessWidget {
               size: 56,
               color: colors.textMuted,
             ),
-            const Text(
-              'Nenhuma lista ainda',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            Text(
+              l10n.emptyHomeTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             Text(
-              'Toque em "Nova lista" e veja o total subir a cada item.',
+              l10n.emptyHomeMessage,
               textAlign: TextAlign.center,
               style: TextStyle(color: colors.textMuted),
             ),

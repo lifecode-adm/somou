@@ -10,6 +10,7 @@ class ListInput {
     this.store,
     this.budgetCents,
     this.mode = ListMode.shopping,
+    this.defaultName = ShoppingList.defaultName,
   });
 
   final String? name;
@@ -17,8 +18,11 @@ class ListInput {
   final int? budgetCents;
   final ListMode mode;
 
+  /// Nome usado quando o campo fica vazio, já no idioma do aparelho.
+  final String Function(DateTime createdAt) defaultName;
+
   ShoppingList toNewList(DateTime now) => ShoppingList(
-    name: _nameOr(ShoppingList.defaultName(now)),
+    name: _nameOr(defaultName(now)),
     store: _blankToNull(store),
     mode: mode,
     budgetCents: budgetCents,
@@ -28,7 +32,7 @@ class ListInput {
 
   /// RF03: o modo não muda depois da criação.
   ShoppingList applyTo(ShoppingList list, DateTime now) => list.copyWith(
-    name: _nameOr(ShoppingList.defaultName(list.createdAt)),
+    name: _nameOr(defaultName(list.createdAt)),
     store: _blankToNull(store),
     clearStore: _blankToNull(store) == null,
     budgetCents: budgetCents,
@@ -47,6 +51,7 @@ class ItemInput {
     this.quantity,
     this.unit = Unit.un,
     this.unitPriceCents,
+    this.defaultName = kDefaultItemName,
   });
 
   final String? name;
@@ -55,7 +60,13 @@ class ItemInput {
   final Unit unit;
   final int? unitPriceCents;
 
-  String get effectiveName => _blankToNull(name) ?? kDefaultItemName;
+  /// Nome usado quando o campo fica vazio, já no idioma do aparelho.
+  final String defaultName;
+
+  /// RN02: item sem nome não entra no histórico.
+  bool get hasName => _blankToNull(name) != null;
+
+  String get effectiveName => _blankToNull(name) ?? defaultName;
 
   /// RN02 e RN11: sem quantidade = 1; até 3 casas decimais.
   double get effectiveQuantity {

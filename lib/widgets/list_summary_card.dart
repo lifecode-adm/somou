@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../models/list_mode.dart';
 import '../models/list_totals.dart';
 import '../theme/app_theme.dart';
@@ -22,6 +23,7 @@ class ListSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     final budget = this.budget;
     final muted = TextStyle(fontSize: 12, color: colors.textMuted);
 
@@ -38,7 +40,7 @@ class ListSummaryCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: Text('Total da lista', style: muted)),
+              Expanded(child: Text(l10n.listTotal, style: muted)),
               if (budget != null) BudgetChip(status: budget),
             ],
           ),
@@ -55,17 +57,17 @@ class ListSummaryCard extends StatelessWidget {
             children: [
               _Metric(
                 value: '${totals.itemCount}',
-                label: totals.itemCount == 1 ? 'item' : 'itens',
+                label: l10n.itemsLabel(totals.itemCount),
               ),
               _Metric(
                 value: formatQuantity(totals.productCount),
-                label: totals.productCount == 1 ? 'produto' : 'produtos',
+                label: l10n.productsLabel(totals.productCount),
               ),
               // RF15: só o Planejamento separa o que já está no carrinho.
               if (mode == ListMode.planning)
                 _Metric(
                   value: formatMoney(totals.cartCents),
-                  label: 'no carrinho',
+                  label: l10n.inCart,
                   flex: 16,
                 ),
             ],
@@ -73,8 +75,10 @@ class ListSummaryCard extends StatelessWidget {
           if (budget != null) ...[
             BudgetBar(status: budget),
             Text(
-              '${formatMoney(budget.referenceCents)} de '
-              '${formatMoney(budget.budgetCents)}',
+              l10n.budgetOf(
+                formatMoney(budget.referenceCents),
+                formatMoney(budget.budgetCents),
+              ),
               style: muted,
             ),
             if (budget.isOver)
@@ -88,7 +92,7 @@ class ListSummaryCard extends StatelessWidget {
                   ),
                   Expanded(
                     child: Text(
-                      'Passou ${formatMoney(budget.overCents)} do orçamento',
+                      l10n.budgetExceeded(formatMoney(budget.overCents)),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../models/form_inputs.dart';
 import '../models/list_mode.dart';
 import '../models/shopping_list.dart';
@@ -49,51 +50,52 @@ class _ListFormSheetState extends State<ListFormSheet> {
   }
 
   void _submit() {
+    final l10n = context.l10n;
     Navigator.of(context).pop(
       ListInput(
         name: _name.text,
         store: _store.text,
         budgetCents: parseMoney(_budget.text),
         mode: _mode,
+        defaultName: (date) => l10n.defaultListName(formatDate(date)),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return SheetScaffold(
-      title: _isEditing ? 'Editar lista' : 'Nova lista',
+      title: _isEditing ? l10n.editList : l10n.newList,
       children: [
         TextField(
           controller: _name,
           autofocus: !_isEditing,
           textCapitalization: TextCapitalization.sentences,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(
-            labelText: 'Nome da lista',
-            hintText: 'Ex.: Compra do mês',
+          decoration: InputDecoration(
+            labelText: l10n.listName,
+            hintText: l10n.listNameHint,
           ),
         ),
         TextField(
           controller: _store,
           textCapitalization: TextCapitalization.words,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(
-            labelText: 'Supermercado (opcional)',
-          ),
+          decoration: InputDecoration(labelText: l10n.storeOptional),
         ),
         TextField(
           controller: _budget,
           keyboardType: TextInputType.number,
           inputFormatters: [MoneyInputFormatter()],
-          decoration: const InputDecoration(
-            labelText: 'Orçamento (opcional)',
-            hintText: r'R$ 0,00',
+          decoration: InputDecoration(
+            labelText: l10n.budgetOptional,
+            hintText: formatMoney(0),
           ),
         ),
         if (!_isEditing) ...[
           Text(
-            'Como você vai usar esta lista?',
+            l10n.modeQuestion,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -104,14 +106,14 @@ class _ListFormSheetState extends State<ListFormSheet> {
             spacing: 12,
             children: [
               _ModeOption(
-                title: 'Já estou comprando',
-                description: 'Cada item entra como pego',
+                title: l10n.modeShoppingOption,
+                description: l10n.modeShoppingDescription,
                 selected: _mode == ListMode.shopping,
                 onTap: () => setState(() => _mode = ListMode.shopping),
               ),
               _ModeOption(
-                title: 'Vou planejar',
-                description: 'Monto antes e marco "já peguei" no mercado',
+                title: l10n.modePlanningOption,
+                description: l10n.modePlanningDescription,
                 selected: _mode == ListMode.planning,
                 onTap: () => setState(() => _mode = ListMode.planning),
               ),
@@ -120,7 +122,7 @@ class _ListFormSheetState extends State<ListFormSheet> {
         ],
         FilledButton(
           onPressed: _submit,
-          child: Text(_isEditing ? 'Salvar' : 'Criar lista'),
+          child: Text(_isEditing ? l10n.save : l10n.createList),
         ),
       ],
     );

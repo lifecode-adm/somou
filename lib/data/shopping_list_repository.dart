@@ -66,21 +66,25 @@ class ShoppingListRepository {
   Future<void> delete(int id) =>
       _db.delete('shopping_lists', where: 'id = ?', whereArgs: [id]);
 
-  /// RF05: copia os itens desmarcados, com "Cópia de …" e modo Planejamento.
-  Future<int> duplicate(ShoppingList source, DateTime now) =>
-      _db.transaction((txn) async {
-        final copy = ShoppingList(
-          name: 'Cópia de ${source.name}',
-          store: source.store,
-          mode: ListMode.planning,
-          budgetCents: source.budgetCents,
-          createdAt: now,
-          updatedAt: now,
-        );
-        final id = await txn.insert('shopping_lists', copy.toMap());
-        final millis = now.millisecondsSinceEpoch;
-        await txn.rawInsert(
-          '''
+  /// RF05: copia os itens desmarcados, com o [name] da cópia ("Cópia de …")
+  /// e modo Planejamento.
+  Future<int> duplicate(
+    ShoppingList source,
+    DateTime now, {
+    required String name,
+  }) => _db.transaction((txn) async {
+    final copy = ShoppingList(
+      name: name,
+      store: source.store,
+      mode: ListMode.planning,
+      budgetCents: source.budgetCents,
+      createdAt: now,
+      updatedAt: now,
+    );
+    final id = await txn.insert('shopping_lists', copy.toMap());
+    final millis = now.millisecondsSinceEpoch;
+    await txn.rawInsert(
+      '''
           INSERT INTO list_items (list_id, name, brand, quantity, unit,
             unit_price_cents, picked, created_at, updated_at)
           SELECT ?, name, brand, quantity, unit, unit_price_cents, 0, ?, ?
@@ -88,8 +92,8 @@ class ShoppingListRepository {
           WHERE list_id = ?
           ORDER BY id
           ''',
-          [id, millis, millis, source.id],
-        );
-        return id;
-      });
+      [id, millis, millis, source.id],
+    );
+    return id;
+  });
 }

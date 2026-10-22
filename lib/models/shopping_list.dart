@@ -32,7 +32,7 @@ class ShoppingList {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  /// RN01: nome usado quando o usuário não informa um.
+  /// RN01: nome usado quando o usuário não informa um (padrão em português).
   static String defaultName(DateTime createdAt) =>
       'Lista ${formatDate(createdAt)}';
 

@@ -30,7 +30,6 @@ class ProductHistoryRepository {
   /// Guarda o item como último registro do produto. Usa UPDATE seguido de
   /// INSERT porque o SQLite de Androids antigos não tem ON CONFLICT DO UPDATE.
   Future<void> save(ListItem item, {DatabaseExecutor? executor}) async {
-    if (item.name == kDefaultItemName) return;
     final db = executor ?? _db;
     final values = {
       'name_key': normalizeName(item.name),

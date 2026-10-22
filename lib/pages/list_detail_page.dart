@@ -6,6 +6,7 @@ import '../controllers/list_detail_controller.dart';
 import '../data/list_item_repository.dart';
 import '../data/product_history_repository.dart';
 import '../data/shopping_list_repository.dart';
+import '../l10n/l10n.dart';
 import '../models/list_item.dart';
 import '../theme/app_theme.dart';
 import '../widgets/dialogs.dart';
@@ -53,15 +54,16 @@ class ListDetailPage extends StatelessWidget {
 
   Future<void> _removeItem(BuildContext context, ListItem item) async {
     final controller = context.read<ListDetailController>();
+    final l10n = context.l10n;
     final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
     await controller.removeItem(item);
     messenger.showSnackBar(
       SnackBar(
-        content: Text('"${item.name}" removido.'),
+        content: Text(l10n.itemRemoved(item.name)),
         // Com ação, o padrão do Flutter é ficar na tela até alguém tocar.
         persist: false,
         action: SnackBarAction(
-          label: 'Desfazer',
+          label: l10n.undo,
           onPressed: () => controller.restoreItem(item),
         ),
       ),
@@ -78,7 +80,9 @@ class ListDetailPage extends StatelessWidget {
         if (input != null) await controller.updateList(input);
       case _DetailAction.duplicate:
         // A Home abre a cópia, assim recarrega os totais ao voltar dela.
-        navigator.pop(await controller.duplicate());
+        navigator.pop(
+          await controller.duplicate(name: context.l10n.copyOf(list.name)),
+        );
       case _DetailAction.delete:
         if (await confirmDeleteList(context, list)) {
           await controller.delete();
@@ -92,6 +96,7 @@ class ListDetailPage extends StatelessWidget {
     final controller = context.watch<ListDetailController>();
     final list = controller.list;
     final colors = context.colors;
+    final l10n = context.l10n;
 
     if (list == null) {
       return Scaffold(
@@ -99,7 +104,7 @@ class ListDetailPage extends StatelessWidget {
         body: Center(
           child: controller.loading
               ? const CircularProgressIndicator()
-              : const Text('Lista não encontrada.'),
+              : Text(l10n.listNotFound),
         ),
       );
     }
@@ -117,28 +122,29 @@ class ListDetailPage extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              [?list.store, list.mode.label].join(' · '),
+              [?list.store, list.mode.label(l10n)].join(' · '),
               style: TextStyle(fontSize: 13, color: colors.onHeaderMuted),
             ),
           ],
         ),
         actions: [
           IconButton(
-            tooltip: 'Compartilhar no WhatsApp',
+            tooltip: l10n.shareOnWhatsApp,
             icon: const Icon(Icons.share_outlined),
-            onPressed: () => shareOnWhatsApp(context, controller.shareText()),
+            onPressed: () =>
+                shareOnWhatsApp(context, controller.shareText(l10n)),
           ),
           PopupMenuButton<_DetailAction>(
             onSelected: (action) => _onMenu(context, action),
-            itemBuilder: (context) => const [
-              PopupMenuItem(value: _DetailAction.edit, child: Text('Editar')),
+            itemBuilder: (context) => [
+              PopupMenuItem(value: _DetailAction.edit, child: Text(l10n.edit)),
               PopupMenuItem(
                 value: _DetailAction.duplicate,
-                child: Text('Duplicar'),
+                child: Text(l10n.duplicate),
               ),
               PopupMenuItem(
                 value: _DetailAction.delete,
-                child: Text('Excluir'),
+                child: Text(l10n.delete),
               ),
             ],
           ),
@@ -194,7 +200,7 @@ class ListDetailPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addItem(context),
         icon: const Icon(Icons.add),
-        label: const Text('Item'),
+        label: Text(l10n.addItemButton),
       ),
     );
   }
@@ -224,7 +230,7 @@ class _EmptyList extends StatelessWidget {
     child: Padding(
       padding: const EdgeInsets.all(32),
       child: Text(
-        'Nenhum item ainda. Toque em "Item" para adicionar.',
+        context.l10n.emptyListMessage,
         textAlign: TextAlign.center,
         style: TextStyle(color: context.colors.textMuted),
       ),

@@ -38,8 +38,8 @@ class HomeController extends ChangeNotifier {
     await load();
   }
 
-  Future<int> duplicateList(ShoppingList list) async {
-    final id = await _lists.duplicate(list, DateTime.now());
+  Future<int> duplicateList(ShoppingList list, {required String name}) async {
+    final id = await _lists.duplicate(list, DateTime.now(), name: name);
     await load();
     return id;
   }

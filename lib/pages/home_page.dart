@@ -15,9 +15,13 @@ class HomePage extends StatelessWidget {
 
   Future<void> _openList(BuildContext context, int listId) async {
     final controller = context.read<HomeController>();
-    await Navigator.of(context).push(ListDetailPage.route(listId));
+    final copyId = await Navigator.of(context).push(
+      ListDetailPage.route(listId),
+    );
     // O detalhe pode ter mudado itens, totais ou excluído a lista.
     await controller.load();
+    // Duplicada no detalhe: abre a cópia.
+    if (copyId != null && context.mounted) await _openList(context, copyId);
   }
 
   Future<void> _createList(BuildContext context) async {

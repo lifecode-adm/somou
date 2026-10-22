@@ -17,7 +17,8 @@ import '../widgets/list_summary_card.dart';
 class ListDetailPage extends StatelessWidget {
   const ListDetailPage({super.key});
 
-  static Route<void> route(int listId) => MaterialPageRoute(
+  /// Ao duplicar, a tela fecha devolvendo o id da cópia para quem a abriu.
+  static Route<int> route(int listId) => MaterialPageRoute(
     builder: (context) => ChangeNotifierProvider(
       create: (context) => ListDetailController(
         listId: listId,
@@ -76,8 +77,8 @@ class ListDetailPage extends StatelessWidget {
         final input = await showListFormSheet(context, initial: list);
         if (input != null) await controller.updateList(input);
       case _DetailAction.duplicate:
-        final id = await controller.duplicate();
-        await navigator.pushReplacement(ListDetailPage.route(id));
+        // A Home abre a cópia, assim recarrega os totais ao voltar dela.
+        navigator.pop(await controller.duplicate());
       case _DetailAction.delete:
         if (await confirmDeleteList(context, list)) {
           await controller.delete();

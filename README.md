@@ -236,14 +236,15 @@ flutter doctor
 flutter run
 ```
 
-### Splash screen
+### Ícone, splash screen e logo
 
-A imagem fica em `assets/splash/splash.png` e é desenhada pelo script `tool/make_splash.py`
-(Python + Pillow), que também gera o `logo.png` usado no cabeçalho da Home. Depois de alterá-la, gere os arquivos nativos de Android e iOS:
+As imagens ficam em `assets/icon/` e `assets/splash/` e são desenhadas pelo script
+`tool/make_images.py` (Python + Pillow). Depois de alterá-las, gere os arquivos nativos de Android e iOS:
 
 ```bash
-python tool/make_splash.py assets/splash   # opcional: redesenha a imagem
-dart run flutter_native_splash:create      # tema claro e escuro, incluindo Android 12+
+python tool/make_images.py assets          # opcional: redesenha as imagens
+dart run flutter_launcher_icons            # ícone (inclui adaptativo e monocromático do Android)
+dart run flutter_native_splash:create      # splash (tema claro e escuro, incluindo Android 12+)
 ```
 
 ---

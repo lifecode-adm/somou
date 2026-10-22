@@ -1,14 +1,16 @@
-"""Gera a imagem da splash do Somou: carrinho branco + selo laranja com "+".
+"""Gera as imagens da marca Somou: carrinho branco + selo laranja com "+".
 
-Gera também logo.png (o mesmo desenho sem margem) para o cabeçalho da Home.
+- assets/icon/: ícone do app (completo, primeiro plano adaptativo e monocromático)
+- assets/splash/: splash screen e logo do cabeçalho da Home
 
-Uso: python tool/make_splash.py assets/splash
+Uso: python tool/make_images.py assets
 """
 import sys
 from pathlib import Path
 from PIL import Image, ImageDraw
 
 OUT = Path(sys.argv[1])
+GREEN = (31, 122, 69, 255)       # header  #1F7A45
 ORANGE = (255, 122, 48, 255)     # accent  #FF7A30
 WHITE = (255, 255, 255, 255)
 CLEAR = (0, 0, 0, 0)
@@ -22,9 +24,9 @@ BADGE = (774, 330)
 CENTER = (517, 550)              # centro aproximado do desenho
 
 
-def motif(size, scale):
+def motif(size, scale, bg=CLEAR, mono=False):
     s = size * SS
-    img = Image.new("RGBA", (s, s), CLEAR)
+    img = Image.new("RGBA", (s, s), bg)
     d = ImageDraw.Draw(img)
     k = s / 1024 * scale
 
@@ -44,23 +46,34 @@ def motif(size, scale):
         r = 50 * k
         d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=WHITE)
 
-    # Selo "+": recorte transparente em volta, círculo laranja e uma cruz.
+    # Selo "+": recorte em volta, círculo laranja e uma cruz. No monocromático
+    # só a forma conta, então o círculo fica branco e a cruz vazada.
     bx, by = p(*BADGE)
     ring, r = 150 * k, 118 * k
-    d.ellipse([bx - ring, by - ring, bx + ring, by + ring], fill=CLEAR)
-    d.ellipse([bx - r, by - r, bx + r, by + r], fill=ORANGE)
+    d.ellipse([bx - ring, by - ring, bx + ring, by + ring], fill=CLEAR if mono else bg)
+    d.ellipse([bx - r, by - r, bx + r, by + r], fill=WHITE if mono else ORANGE)
     arm, thick = 128 * k, 34 * k
+    cross = CLEAR if mono else WHITE
     d.rounded_rectangle([bx - arm / 2, by - thick / 2, bx + arm / 2, by + thick / 2],
-                        radius=thick / 2, fill=WHITE)
+                        radius=thick / 2, fill=cross)
     d.rounded_rectangle([bx - thick / 2, by - arm / 2, bx + thick / 2, by + arm / 2],
-                        radius=thick / 2, fill=WHITE)
+                        radius=thick / 2, fill=cross)
     return img.resize((size, size), Image.LANCZOS)
 
 
-OUT.mkdir(parents=True, exist_ok=True)
-# O Android 12+ recorta um círculo de 2/3 do tamanho, por isso a margem.
-motif(1152, 0.62).save(OUT / "splash.png")
+icon, splash = OUT / "icon", OUT / "splash"
+icon.mkdir(parents=True, exist_ok=True)
+splash.mkdir(parents=True, exist_ok=True)
+
+# Ícone completo (iOS e Android antigo): fundo verde, sem transparência.
+motif(1024, 0.92, GREEN).save(icon / "icon.png")
+# Camadas do ícone adaptativo; o flutter_launcher_icons já aplica 16% de margem.
+motif(1024, 0.92).save(icon / "icon_foreground.png")
+motif(1024, 0.92, mono=True).save(icon / "icon_monochrome.png")
+
+# O Android 12+ recorta um círculo de 2/3 da splash, por isso a margem.
+motif(1152, 0.62).save(splash / "splash.png")
 # Mesmo desenho sem margem, para o cabeçalho da Home.
 logo = motif(1024, 1.0)
-logo.crop(logo.getbbox()).save(OUT / "logo.png")
+logo.crop(logo.getbbox()).save(splash / "logo.png")
 print("ok")

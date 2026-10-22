@@ -239,7 +239,7 @@ flutter run
 ### Splash screen
 
 A imagem fica em `assets/splash/splash.png` e é desenhada pelo script `tool/make_splash.py`
-(Python + Pillow). Depois de alterá-la, gere os arquivos nativos de Android e iOS:
+(Python + Pillow), que também gera o `logo.png` usado no cabeçalho da Home. Depois de alterá-la, gere os arquivos nativos de Android e iOS:
 
 ```bash
 python tool/make_splash.py assets/splash   # opcional: redesenha a imagem

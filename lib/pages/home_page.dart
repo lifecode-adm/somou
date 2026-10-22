@@ -95,14 +95,24 @@ class HomePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 2,
                     children: [
-                      Text(
-                        'Somou',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.5,
-                          color: colors.onHeader,
-                        ),
+                      Row(
+                        spacing: 10,
+                        children: [
+                          Image.asset(
+                            'assets/splash/logo.png',
+                            height: 30,
+                            excludeFromSemantics: true,
+                          ),
+                          Text(
+                            'Somou',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.5,
+                              color: colors.onHeader,
+                            ),
+                          ),
+                        ],
                       ),
                       Text(
                         'Lista de compras com total na hora',

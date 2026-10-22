@@ -1,5 +1,7 @@
 """Gera a imagem da splash do Somou: carrinho branco + selo laranja com "+".
 
+Gera também logo.png (o mesmo desenho sem margem) para o cabeçalho da Home.
+
 Uso: python tool/make_splash.py assets/splash
 """
 import sys
@@ -58,4 +60,7 @@ def motif(size, scale):
 OUT.mkdir(parents=True, exist_ok=True)
 # O Android 12+ recorta um círculo de 2/3 do tamanho, por isso a margem.
 motif(1152, 0.62).save(OUT / "splash.png")
+# Mesmo desenho sem margem, para o cabeçalho da Home.
+logo = motif(1024, 1.0)
+logo.crop(logo.getbbox()).save(OUT / "logo.png")
 print("ok")

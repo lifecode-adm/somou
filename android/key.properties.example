@@ -1,0 +1,6 @@
+# Copie para android/key.properties (ignorado pelo git) e preencha.
+# storeFile aceita caminho absoluto; no Windows use barras normais.
+storePassword=SENHA_DA_KEYSTORE
+keyPassword=SENHA_DA_CHAVE
+keyAlias=upload
+storeFile=C:/Users/paulo/somou-upload.jks

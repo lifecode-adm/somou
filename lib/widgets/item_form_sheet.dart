@@ -256,7 +256,9 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
           ),
         ),
         FilledButton(
-          onPressed: () => Navigator.of(context).pop(input),
+          // Lê os campos na hora do toque: a marca não redesenha a tela ao
+          // mudar, então o `input` do último build pode estar desatualizado.
+          onPressed: () => Navigator.of(context).pop(_input),
           child: Text(_isEditing ? l10n.save : l10n.add),
         ),
       ],

@@ -46,9 +46,10 @@
   }
   .lang button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
   a { color: var(--accent); }
-  [lang="en"] { display: none; }
-  body.en [lang="pt-BR"] { display: none; }
-  body.en [lang="en"] { display: block; }
+  /* Só os artigos: o <html> também recebe lang="en" ao trocar o idioma. */
+  article[lang="en"] { display: none; }
+  body.en article[lang="pt-BR"] { display: none; }
+  body.en article[lang="en"] { display: block; }
 </style>
 </head>
 <body>

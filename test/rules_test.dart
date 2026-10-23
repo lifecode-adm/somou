@@ -162,10 +162,11 @@ void main() {
     });
   });
 
-  test('RF06: texto para WhatsApp', () {
+  test('RF06: texto para WhatsApp separa carrinho do que falta', () {
     final text = buildShareText(_list(), [
       _item('Arroz', 2, Unit.un, 2500, picked: true, brand: 'Tio João'),
       _item('Carne', 1.5, Unit.kg, 3990),
+      _item('Sal', 1, Unit.un, 300),
     ], _pt);
     expect(
       text,
@@ -175,10 +176,23 @@ void main() {
       '\n'
       r'⬜ 1,5 kg Carne — R$ 59,85'
       '\n'
+      r'⬜ 1 un Sal — R$ 3,00'
+      '\n'
       '━━━━━━━━━━━━\n'
-      'Itens: 2 · Produtos: 3\n'
-      r'Total: R$ 109,85',
+      'Itens: 3 · Produtos: 4\n'
+      r'✅ No carrinho: R$ 50,00 (1 item)'
+      '\n'
+      r'⬜ Falta pegar: R$ 62,85 (2 itens)'
+      '\n'
+      r'Total: R$ 112,85',
     );
+  });
+
+  test('RF06: em compra tudo já está no carrinho, só o total', () {
+    final text = buildShareText(_list(mode: ListMode.shopping), [
+      _item('Arroz', 2, Unit.un, 2500, picked: true),
+    ], _pt);
+    expect(text, endsWith('Itens: 1 · Produtos: 2\nTotal: R\$ 50,00'));
   });
 
   group('idioma e região', () {

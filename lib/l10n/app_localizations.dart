@@ -482,6 +482,18 @@ abstract class AppLocalizations {
   /// **'Itens: {items} · Produtos: {products}'**
   String shareSummary(int items, String products);
 
+  /// No description provided for @shareInCart.
+  ///
+  /// In pt, this message translates to:
+  /// **'No carrinho: {amount} ({count, plural, =1{1 item} other{{count} itens}})'**
+  String shareInCart(String amount, int count);
+
+  /// No description provided for @shareRemaining.
+  ///
+  /// In pt, this message translates to:
+  /// **'Falta pegar: {amount} ({count, plural, =1{1 item} other{{count} itens}})'**
+  String shareRemaining(String amount, int count);
+
   /// No description provided for @shareTotal.
   ///
   /// In pt, this message translates to:

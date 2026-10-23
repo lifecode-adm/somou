@@ -87,6 +87,10 @@
 
   "shareSummary": "Itens: {items} · Produtos: {products}",
   "@shareSummary": {"placeholders": {"items": {"type": "int"}, "products": {"type": "String"}}},
+  "shareInCart": "No carrinho: {amount} ({count, plural, =1{1 item} other{{count} itens}})",
+  "@shareInCart": {"placeholders": {"amount": {"type": "String"}, "count": {"type": "int"}}},
+  "shareRemaining": "Falta pegar: {amount} ({count, plural, =1{1 item} other{{count} itens}})",
+  "@shareRemaining": {"placeholders": {"amount": {"type": "String"}, "count": {"type": "int"}}},
   "shareTotal": "Total: {total}",
   "@shareTotal": {"placeholders": {"total": {"type": "String"}}}
 }

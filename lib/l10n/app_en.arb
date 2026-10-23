@@ -75,5 +75,7 @@
   "unnamedItem": "Unnamed item",
 
   "shareSummary": "Items: {items} · Products: {products}",
+  "shareInCart": "In the cart: {amount} ({count, plural, =1{1 item} other{{count} items}})",
+  "shareRemaining": "Still to get: {amount} ({count, plural, =1{1 item} other{{count} items}})",
   "shareTotal": "Total: {total}"
 }

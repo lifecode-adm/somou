@@ -246,6 +246,28 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String shareInCart(String amount, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return 'In the cart: $amount ($_temp0)';
+  }
+
+  @override
+  String shareRemaining(String amount, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return 'Still to get: $amount ($_temp0)';
+  }
+
+  @override
   String shareTotal(String total) {
     return 'Total: $total';
   }

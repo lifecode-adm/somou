@@ -3,7 +3,8 @@
 - assets/icon/: ícone do app (completo, primeiro plano adaptativo e monocromático)
 - assets/splash/: splash screen e logo do cabeçalho da Home
 
-Uso: python tool/make_images.py assets
+Uso: python tool/make_images.py assets [store]
+(com `store`, gera também o ícone 512 e as imagens de destaque da Play Store)
 """
 import sys
 from pathlib import Path
@@ -75,5 +76,36 @@ motif(1024, 0.92, mono=True).save(icon / "icon_monochrome.png")
 motif(1152, 0.62).save(splash / "splash.png")
 # Mesmo desenho sem margem, para o cabeçalho da Home.
 logo = motif(1024, 1.0)
-logo.crop(logo.getbbox()).save(splash / "logo.png")
+logo = logo.crop(logo.getbbox())
+logo.save(splash / "logo.png")
+
+# Imagens da Play Store, só quando a pasta é passada (ex.: `store`).
+if len(sys.argv) > 2:
+    from PIL import ImageFont
+
+    STORE = Path(sys.argv[2])
+    STORE.mkdir(parents=True, exist_ok=True)
+    LIGHT = (207, 232, 217, 255)  # onHeaderMuted  #CFE8D9
+
+    # Ícone da loja: 512×512, quadrado; o Google arredonda os cantos.
+    motif(1024, 0.92, GREEN).resize((512, 512), Image.LANCZOS).save(STORE / "icon-512.png")
+
+    # Imagem de destaque 1024×500, uma por idioma. Fontes do Windows.
+    title_font = ImageFont.truetype("C:/Windows/Fonts/segoeuib.ttf", 112)
+    tagline_font = ImageFont.truetype("C:/Windows/Fonts/seguisb.ttf", 40)
+    taglines = {
+        "pt": ["Lista de compras", "com total na hora"],
+        "en": ["Shopping list with", "a running total"],
+    }
+    for lang, lines in taglines.items():
+        img = Image.new("RGBA", (1024, 500), GREEN)
+        mark = logo.resize((300, round(300 * logo.height / logo.width)), Image.LANCZOS)
+        img.alpha_composite(mark, (90, (500 - mark.height) // 2))
+        d = ImageDraw.Draw(img)
+        x = 450
+        d.text((x, 118), "Somou", font=title_font, fill=WHITE)
+        for i, line in enumerate(lines):
+            d.text((x + 4, 270 + i * 52), line, font=tagline_font, fill=LIGHT)
+        img.convert("RGB").save(STORE / f"feature-graphic-{lang}.png")
+
 print("ok")
